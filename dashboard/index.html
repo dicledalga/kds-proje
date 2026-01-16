@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STARBUCKS KDS</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- LOGIN EKRANI -->
+    <div id="login-screen" class="login-container">
+        <div class="login-box">
+            <img src="assets/logo.png" alt="Logo" class="login-logo">
+
+            <h2>Starbucks</h2>
+            <p class="login-subtitle">Karar Destek Sistemi</p>
+
+            <input type="text" id="username" placeholder="Kullanıcı Adı">
+            <input type="password" id="password" placeholder="Şifre">
+
+            <button onclick="login()">Giriş Yap</button>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" style="display:none;">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/logo.png" class="sidebar-logo">
+                <h2>Starbucks KDS</h2>
+            </div>
+
+            <ul class="menu">
+                <li class="menu-item active" onclick="showPage('page-dashboard', this)">Dashboard</li>
+                <li class="menu-item" onclick="showPage('page-aylik', this)">Satış Trendi</li>
+                <li class="menu-item" onclick="showPage('page-sube', this)">Şube Performansı</li>
+                <li class="menu-item" onclick="showPage('page-kategori', this)">Kategori Satış</li>
+                <li class="menu-item" onclick="showPage('page-musteri', this)">Müşteri Trend</li>
+                <li class="menu-item" onclick="showPage('page-kanal', this)">Kanal Analizi</li>
+                <li class="menu-item" onclick="showPage('page-maliyet', this)">Maliyet Trend</li>
+            </ul>
+
+            <!-- ÇIKIŞ YAP -->
+            <div class="logout-container">
+                <button class="logout-btn" onclick="logout()">⏻ Çıkış Yap</button>
+            </div>
+
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            ☰
+        </button>
+
+        <main class="content">
+
+            <!-- ANA DASHBOARD SAYFASI -->
+            <section id="page-dashboard" class="page active-page">
+
+                <h1>Dashboard</h1>
+                <h3>Genel özet kartları</h3>
+
+                <div class="kds-summary-grid">
+
+                    <div class="kds-info-box">
+                        <span class="kds-label">TOPLAM SATIŞ (YILLIK)</span>
+                        <div class="kds-value" id="val-satis-yillik">₺0</div>
+                        <div class="kds-trend-container" id="trend-satis-v2">
+                            <span class="kds-trend-arrow"></span>
+                            <span class="kds-trend-percent"></span>
+                        </div>
+                    </div>
+
+                    <div class="kds-info-box">
+                        <span class="kds-label">NET KÂR</span>
+                        <div class="kds-value" id="val-kar-yillik">₺0</div>
+                        <div class="kds-trend-container" id="trend-kar-v2">
+                            <span class="kds-trend-arrow"></span>
+                            <span class="kds-trend-percent"></span>
+                        </div>
+                    </div>
+
+                    <div class="kds-info-box">
+                        <span class="kds-label">MÜŞTERİ MEMNUNİYETİ</span>
+                        <div class="kds-value" id="val-nps-yillik">0.0 / 5.0</div>
+                        <div class="kds-trend-container" id="trend-nps-v2">
+                            <span class="kds-trend-arrow"></span>
+                            <span class="kds-trend-percent"></span>
+                        </div>
+                    </div>
+
+                    <div class="kds-info-box">
+                        <span class="kds-label">VERİMLİLİK SKORU</span>
+                        <div class="kds-value" id="val-verimlilik-yillik">%0</div>
+                        <div class="kds-trend-container" id="trend-verimlilik-v2">
+                            <span class="kds-trend-arrow"></span>
+                            <span class="kds-trend-percent"></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ÖZET KARTLAR -->
+                <div class="cards-row">
+                    <div class="card">
+                        <h2>Satış Analizi</h2>
+                        <p id="card-toplam-satis">-</p>
+                    </div>
+
+                    <div class="card">
+                        <h2>Müşteri Analizi</h2>
+                        <p id="card-musteri">-</p>
+                    </div>
+
+                    <div class="card dss-card">
+                        <h2>Kanal Kararı</h2>
+                        <p id="dss-kanal">-</p>
+                    </div>
+
+                    <div class="card">
+                        <h2>Maliyet Analizi</h2>
+                        <p id="card-maliyet">-</p>
+                    </div>
+
+                    <div class="card">
+                        <h2>Kategori Lideri</h2>
+                        <p id="card-kategori">-</p>
+                    </div>
+                </div>
+
+
+                <!-- TRAFFIC LIGHT DURUM KARTLARI -->
+                <div class="status-row">
+
+                    <div id="status-satis" class="status-card">
+                        <h4>Satış Durumu</h4>
+                        <p>-</p>
+                    </div>
+
+                    <div id="status-musteri" class="status-card">
+                        <h4>Müşteri Durumu</h4>
+                        <p>-</p>
+                    </div>
+
+                    <div id="status-maliyet" class="status-card">
+                        <h4>Maliyet Durumu</h4>
+                        <p>-</p>
+                    </div>
+
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label for="subeFiltre"><strong>Şube Seç:</strong></label>
+                    <select id="subeFiltre" onchange="onSubeChange()">
+                        <option value="0">Tümü</option>
+                        <option value="1">Starbucks Kordon</option>
+                        <option value="2">Starbucks Küçükpark</option>
+                        <option value="3">Starbucks Karşıyaka Çarşı</option>
+                        <option value="4">Starbucks Optimum</option>
+                        <option value="5">Starbucks Buca</option>
+                    </select>
+                </div>
+
+                <!-- AYLIK SATIŞ + KATEGORİ DAĞILIMI -->
+                <div class="side-by-side-charts">
+                    <div class="chart-box chart-half">
+                        <h2>Aylık Satış Grafiği</h2>
+                        <canvas id="dashboardSalesChart"></canvas>
+                    </div>
+
+                    <div class="chart-box chart-half">
+                        <h2>Kategori Dağılımı</h2>
+                        <canvas id="kategoriDonutChart"></canvas>
+                    </div>
+                </div>
+
+                <br>
+                <br>
+
+                <!-- KARAR DESTEK ÖNERİSİ -->
+                <div class="dss-box">
+                    <h2>Karar Destek Önerisi</h2>
+                    <p id="dssOneriMetni">Veriler yükleniyor...</p>
+                </div>
+                <br>
+                <br>
+
+                <!--TAHMİNİ VERİLER-->
+                <div class="tahmin-row">
+                    <div class="card tahmin-card">
+                        <h3>Sonraki Ay Satış Tahmini</h3>
+                        <p id="tahmin-satis">Yükleniyor...</p>
+                    </div>
+
+                    <div class="card tahmin-card">
+                        <h3>Sonraki Ay Müşteri Tahmini</h3>
+                        <p id="tahmin-musteri">Yükleniyor...</p>
+                    </div>
+
+                    <div class="card tahmin-card">
+                        <h3>Sonraki Ay Maliyet Tahmini</h3>
+                        <p id="tahmin-maliyet">Yükleniyor...</p>
+                    </div>
+                </div>
+
+                <div class="tahmin-6ay-container">
+                    <h2>Önümüzdeki 6 Ay Tahminleri</h2>
+                    <div class="tahmin-6ay-grid">
+                        <div class="chart-box chart-6ay">
+                            <h3>6 Aylık Satış Tahmini</h3>
+                            <canvas id="tahminSatis6AyChart"></canvas>
+                        </div>
+                        <div class="chart-box chart-6ay">
+                            <h3>6 Aylık Müşteri Tahmini</h3>
+                            <canvas id="tahminMusteri6AyChart"></canvas>
+                        </div>
+                        <div class="chart-box chart-6ay">
+                            <h3>6 Aylık Maliyet Tahmini</h3>
+                            <canvas id="tahminMaliyet6AyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Kâr Analizi</h2>
+                <div class="side-by-side-charts">
+                    <div class="chart-box chart-half">
+                        <h3 style="text-align:center; margin-bottom:10px; font-size:16px; color:#555;">Aylık Kâr
+                            Değişimi</h3>
+                        <canvas id="karAylikChart"></canvas>
+                    </div>
+                    <div class="chart-box chart-half">
+                        <h3 style="text-align:center; margin-bottom:10px; font-size:16px; color:#555;">Şube Kâr Dağılımı
+                        </h3>
+                        <canvas id="karSubeChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-box" style="background: #fdfdfd; border: 2px dashed #006241;">
+                    <h2 style="color: #006241; margin-bottom: 20px;">🧪 Kâr Değişimi İçin Stratejik Simülasyon</h2>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                        <div class="simulation-controls">
+                            <div style="margin-bottom: 15px;">
+                                <label>Satış Hacmi Değişimi: <strong id="val-satis">%0</strong></label>
+                                <input type="range" id="slider-satis" min="-50" max="100" value="0" style="width:100%"
+                                    oninput="runSimulation()">
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <label>Birim Maliyet Değişimi: <strong id="val-maliyet">%0</strong></label>
+                                <input type="range" id="slider-maliyet" min="-30" max="50" value="0" style="width:100%"
+                                    oninput="runSimulation()">
+                            </div>
+                        </div>
+
+                        <div id="sim-result-box"
+                            style="text-align: center; padding: 20px; border-radius: 10px; background: #eee;">
+                            <h4 style="margin:0;">Tahmini Net Kâr Değişimi</h4>
+                            <div id="sim-profit-result" style="font-size: 32px; font-weight: bold; margin: 10px 0;">0 ₺
+                            </div>
+                            <p id="sim-advice" style="font-size: 14px; color: #666;">Mevcut veriler üzerinden simülasyon
+                                yapın.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-box what-if-container">
+                    <div class="what-if-header">
+                        <div class="header-left">
+                            <h2><span class="icon">📊</span> Fiyat Esnekliği & What-If Analizi</h2>
+                            <p>Fiyat kararlarının ve müşteri kaybının yıllık ciroyu nasıl etkileyeceğini simüle edin.
+                            </p>
+                        </div>
+                        <div class="result-badge" id="badge-container">
+                            <span class="badge-title">TAHMİNİ YILLIK CİRO FARKI</span>
+                            <div class="badge-value" id="res-fark">₺0</div>
+                            <span class="badge-sub" id="res-varyasyon">%0.0 Varyasyon</span>
+                        </div>
+                    </div>
+
+                    <div class="what-if-content">
+                        <div class="sliders-section">
+                            <div class="slider-group">
+                                <div class="slider-info">
+                                    <label>FİYAT ARTIŞ ORANI (ZAM)</label>
+                                    <span class="slider-val" id="val-zam">%0</span>
+                                </div>
+                                <input type="range" id="slider-zam" min="0" max="100" value="0" step="1"
+                                    oninput="updateWhatIf()">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-info">
+                                    <label>TAHMİNİ MÜŞTERİ KAYBI (CHURN)</label>
+                                    <span class="slider-val" id="val-churn">%0</span>
+                                </div>
+                                <input type="range" id="slider-churn" min="0" max="50" value="0" step="1"
+                                    oninput="updateWhatIf()">
+                            </div>
+                        </div>
+
+                        <div class="analysis-report">
+                            <div class="report-header">
+                                <span class="icon">🎯</span> <strong>KARAR ANALİZ RAPORU</strong>
+                            </div>
+                            <p id="report-text">Veriler yükleniyor...</p>
+
+                            <div class="target-cards">
+                                <div class="t-card">
+                                    <span>MEVCUT YILLIK CİRO</span>
+                                    <strong id="curr-val">₺0</strong>
+                                </div>
+                                <div class="t-card target">
+                                    <span>YENİ HEDEF CİRO</span>
+                                    <strong id="new-val">₺0</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section> <!-- Dashboard KAPANIYOR -->
+
+            <!-- SATIŞ TRENDİ -->
+            <section id="page-aylik" class="page">
+                <h1>Satış Trendi</h1>
+
+                <div style="margin-bottom:15px;">
+                    <label for="aylikSubeFiltre"><strong>Şube Seç:</strong></label>
+                    <select id="aylikSubeFiltre" onchange="onAylikSubeChange()">
+                        <option value="0">Tümü</option>
+                        <option value="1">Starbucks Kordon</option>
+                        <option value="2">Starbucks Küçükpark</option>
+                        <option value="3">Starbucks Karşıyaka Çarşı</option>
+                        <option value="4">Starbucks Optimum</option>
+                        <option value="5">Starbucks Buca</option>
+                    </select>
+                </div>
+
+                <p>Aylık satış grafiği aşağıdadır:</p>
+
+                <div class="auto-yorum" id="yorum-aylik-satis">
+                </div>
+
+                <div class="chart-box chart--bar">
+                    <canvas id="aylikSatisChart"></canvas>
+                </div>
+
+            </section>
+
+            <!-- ŞUBE PERFORMANSI -->
+
+            <section id="page-sube" class="page">
+                <h1>Şube Performansı</h1>
+
+                <div class="metric-buttons">
+                    <button class="metric-btn active" onclick="changeSubeMetric('satis', this)">
+                        Toplam Satış
+                    </button>
+                    <button class="metric-btn" onclick="changeSubeMetric('adet', this)">
+                        Toplam Adet
+                    </button>
+                    <button class="metric-btn" onclick="changeSubeMetric('sepet', this)">
+                        Ortalama Sepet
+                    </button>
+                </div>
+
+                <div class="chart-box chart--bar">
+                    <canvas id="subePerformansChart"></canvas>
+                </div>
+
+                <div class="auto-yorum" id="sube-yorum">
+                    Şube performans yorumu burada gösterilecektir.
+                </div>
+
+            </section>
+
+            <!-- KATEGORİ SATIŞ -->
+            <section id="page-kategori" class="page">
+                <h1>Kategori Satış (Aylara Göre)</h1>
+                <p>Kategori bazında aylık satış grafiği:</p>
+
+                <div class="chart-box chart--line">
+                    <canvas id="kategoriAylikChart"></canvas>
+                </div>
+
+                <hr>
+
+                <h3>📊 Seçilen Aya Göre Kategori Karşılaştırması</h3>
+
+                <div class="filter-bar">
+                    <label for="monthSelect">📅 Ay Seç:</label>
+                    <select id="monthSelect">
+                        <option value="">Ay Seçiniz</option>
+                        <option value="0">Ocak</option>
+                        <option value="1">Şubat</option>
+                        <option value="2">Mart</option>
+                        <option value="3">Nisan</option>
+                        <option value="4">Mayıs</option>
+                        <option value="5">Haziran</option>
+                        <option value="6">Temmuz</option>
+                        <option value="7">Ağustos</option>
+                        <option value="8">Eylül</option>
+                        <option value="9">Ekim</option>
+                        <option value="10">Kasım</option>
+                        <option value="11">Aralık</option>
+                    </select>
+                </div>
+
+                <canvas id="monthlyCategoryChart" height="120"></canvas>
+
+                <div id="kategori-dinamik-yorum" class="auto-yorum">
+                    Lütfen analiz için bir ay seçiniz.
+                </div>
+
+            </section>
+
+            <!-- MÜŞTERİ TREND -->
+            <section id="page-musteri" class="page">
+                <h1>Şubelere Göre Müşteri Trend (Yıllık)</h1>
+                <div class="chart-box chart--line">
+                    <canvas id="musteriTrendChart"></canvas>
+                </div>
+                <div id="musteri-gelecek-oneri" class="kds-oneri-box"></div>
+            </section>
+
+            <!-- KANAL ANALİZİ -->
+            <section id="page-kanal" class="page">
+                <h1>Kanal Bazlı Analiz</h1>
+
+                <div class="pie-charts-row">
+
+                    <div class="chart-box chart-pie-half">
+                        <h3 style="text-align:center; margin-bottom:15px; color:#555;">Toplam Satış Dağılımı</h3>
+                        <div class="pie-container">
+                            <canvas id="kanalPieChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-box chart-pie-half">
+                        <h3 style="text-align:center; margin-bottom:15px; color:#555;">Ortalama Puan Dağılımı</h3>
+                        <div class="pie-container">
+                            <canvas id="kanalPuanPieChart"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="auto-yorum" id="yorum-kanal-puan"></div>
+
+                <h2>Aylara Göre Kanal Trend Grafiği</h2>
+                <div class="chart-box chart--line">
+                    <canvas id="kanalTrendChart"></canvas>
+                </div>
+
+                <div class="auto-yorum" id="yorum-kanal"></div>
+
+                <h2>Kanal İstatistikleri</h2>
+                <div class="cards-row">
+                    <div class="card">
+                        <h3>En Çok Satış Yapan Kanal</h3>
+                        <p id="kanal-en-cok">-</p>
+                    </div>
+                    <div class="card">
+                        <h3>En Az Satış Yapan Kanal</h3>
+                        <p id="kanal-en-az">-</p>
+                    </div>
+                    <div class="card">
+                        <h3>En Çok Artış Gösteren Kanal</h3>
+                        <p id="kanal-artis">-</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-maliyet" class="page">
+                <h1>Maliyet Trend Analizi</h1>
+
+                <div class="auto-yorum" id="maliyetYorum"></div>
+
+                <div class="maliyet-filtre-container"
+                    style="margin-bottom: 20px; display: flex; gap: 15px; justify-content: center;">
+                    <label class="filter-chip">
+                        <input type="checkbox" checked onchange="toggleMaliyetLayer('iscilik', this)">
+                        <span class="chip-label iscilik">👷 İşçilik</span>
+                    </label>
+                    <label class="filter-chip">
+                        <input type="checkbox" checked onchange="toggleMaliyetLayer('lojistik', this)">
+                        <span class="chip-label lojistik">🚚 Lojistik</span>
+                    </label>
+                    <label class="filter-chip">
+                        <input type="checkbox" checked onchange="toggleMaliyetLayer('diger', this)">
+                        <span class="chip-label diger">📦 Diğer</span>
+                    </label>
+                </div>
+
+                <div class="side-by-side-charts">
+                    <div class="chart-box chart-half">
+                        <h3 style="text-align:center; margin-bottom:10px;">Genel Toplam Maliyet</h3>
+                        <canvas id="maliyetToplamChart"></canvas>
+                    </div>
+
+                    <div class="chart-box chart-half">
+                        <h3 style="text-align:center; margin-bottom:10px;">Şubelere Göre Maliyet</h3>
+                        <canvas id="maliyetSubeChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
