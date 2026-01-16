@@ -25,8 +25,6 @@ Mimari: REST API
 
 # Kurulum Adımları
 Projeyi klonlama
-git clone https://github.com/kullaniciadi/starbucks-izmir-karar-destek-sistemi.git
-
 Backend klasörüne girme
 cd backend
 
